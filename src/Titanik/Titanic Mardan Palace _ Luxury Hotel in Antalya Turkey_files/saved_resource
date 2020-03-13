@@ -1,0 +1,514 @@
+
+ if(aff_masterTag == null){	var aff_masterTag = true;
+// masterTag regenerated on 2020-03-05 14:15
+if(aff_denomatic == null){
+	var aff_denomatic = true;
+	/* Denomatic pixel */
+	! function() {
+	var x = document.createElement("script");
+	x.type = "text/javascript", x.async = !0, x.src = "https://cdn.denomatic.com/drs/240-cf33122ecfd8.js";
+	var z = document.getElementsByTagName("head")[0];
+	if (z) z.appendChild(x, z);
+	else {
+	var z = document.getElementsByTagName("script")[0];
+	z.parentNode.insertBefore(x, z)
+	}
+	}();
+}
+
+/**************************************************
+ * AFFILIRED MERCHANT LOCAL COOKIES
+ *
+ * Note: Adding the variable into the browser console "window.affilireddebug=1" will enable the log feature
+ *
+ **************************************************/
+var AffMLC = AffMLC || {};
+
+(function ($xd) {
+	$xd.AffLocalCookieName = ""; // initialized in init, so it's not concatenating itself with ACD
+	$xd.COOKIELIFE = 30 * 24 * 60 * 60;
+
+	$xd.getPlatformType = function () {
+		if(navigator.userAgent.match(/mobile/i)) {
+			// 'Mobile';
+			return 2;
+		} else if (navigator.userAgent.match(/iPad|Android|Touch/i)) {
+			// 'Tablet';
+			return 3;
+		} else if (navigator.userAgent.match(/tv/i)) {
+            // 'SmartTV';
+            return 4;
+        } else {
+			// 'Desktop';
+			return 1;
+		}
+	};
+
+	$xd.createPropagateParam = function (network, affiliate, remainingTime, tracking_reference, clickid) {
+		var propagate_param = '_affclk=' + network + ':' + affiliate + ':';
+		if (remainingTime != null) {
+			propagate_param += remainingTime;
+		}
+		propagate_param += ':';
+		if (tracking_reference != null) {
+			propagate_param += tracking_reference;
+		}
+
+		propagate_param += ':';
+		if (clickid != null) {
+			propagate_param += clickid;
+		}
+
+		return propagate_param;
+	};
+
+	$xd.isExternalLink = function (link) {
+		var pagedomain = $xd.getHostName(document.location.href);
+		var linkdomain = $xd.getHostName(link);
+		return (linkdomain != pagedomain);
+	};
+
+	$xd.linkContainsQueryString = function (link) {
+		if (link.indexOf('?') > -1) {
+			return true;
+		} else {
+			return false;
+		}
+	};
+
+	$xd.injectParametersToLink = function (_link, propagate_param) {
+		if (propagate_param == '') {
+			return _link;
+		}
+		var separator;
+		if ($xd.linkContainsQueryString(_link)) {
+			separator = "&";
+		} else {
+			separator = "?";
+		}
+
+		/* Check internal anchors in the URL */
+		var anchor = '';
+		var anchorposition = _link.indexOf('#');
+		if (anchorposition > -1) {
+			anchor = _link.substr(anchorposition);
+			_link = _link.substr(0, anchorposition);
+		}
+
+		var result = _link + separator + propagate_param + anchor;
+		return result;
+	};
+
+	$xd.getHostName = function (url) {
+		var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+		if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+			return match[2];
+		} else {
+			return null;
+		}
+	};
+
+	$xd.getAffLocalCookie = function () {
+		var value = "; " + document.cookie;
+		var parts = value.split("; " + this.AffLocalCookieName + "=");
+		if (parts.length == 2) {
+			return parts.pop().split(";").shift();
+		} else {
+			return null;
+		}
+	};
+
+	$xd.setAffLocalCookie = function (network, tracking_ref, affiliate, funnel, referrer, clickTime, acd_sale, clickid, device, expires, domain) {
+		if (tracking_ref==null) {
+			tracking_ref = '';
+		}
+		if (clickid==null) {
+			clickid = '';
+		}
+		/*
+		* NORMALIZED COOKIE FORMAT:
+		* network | tracking_ref | affiliate_ref | affiliate_ref_old | referrer | cookieTime | acd_sale | clickId | device
+		*
+		*/
+		var content = network + "|" + tracking_ref + "|" + affiliate + "|" + funnel + "|" + referrer + "|" + clickTime + "|" + acd_sale + "|" + clickid + "|" + device;
+		content = content.replace(/;/g, "%3B");
+document.cookie = this.AffLocalCookieName + "=" + content + "; expires = " + expires + ";domain=." + domain + ";path=/;";
+	};
+
+	$xd.getDomain = function () {
+		// http://rossscrivener.co.uk/blog/javascript-get-domain-exclude-subdomain
+		var i = 0;
+		var domain = document.domain;
+		var p = domain.split('.');
+		var s = '_gd' + (new Date()).getTime();
+		while (i < (p.length - 1) && document.cookie.indexOf(s + '=' + s) == -1) {
+			domain = p.slice(-1 - (++i)).join('.');
+			document.cookie = s + "=" + s + ";domain=" + domain + ";";
+		}
+		document.cookie = s + "=;expires=Thu, 01 Jan 1970 00:00:01 GMT;domain=" + domain + ";";
+		return domain;
+	};
+
+	$xd.isLink = function (url) {
+		url = url.toLowerCase();
+		if (url.substring(0, 7) === 'http://') {
+			return true;
+		}
+		if (url.substring(0, 8) === 'https://') {
+			return true;
+		}
+		if (url.substring(0, 2) === '//') {
+			return true;
+		}
+		if (url.substring(0, 1) === '/') {
+			return true;
+		}
+		return false;
+	};
+
+	$xd.extractDomain = function (url) {
+		var hostname;
+		//find & remove protocol (http, ftp, etc.) and get hostname
+
+		if (url.indexOf("//") > -1) {
+			hostname = url.split('/')[2];
+		} else {
+			hostname = url.split('/')[0];
+		}
+
+		//find & remove port number
+		hostname = hostname.split(':')[0];
+		//find & remove "?"
+		hostname = hostname.split('?')[0];
+
+		hostname = hostname.replace("www.", "");
+		return hostname;
+	};
+
+	$xd.inBlackList = function (externalURL) {
+		var blacklist = [
+			"facebook.com",
+			"twitter.com",
+			"youtube.com",
+			"instagram.com",
+			"pinterest.es",
+			"pinterest.com",
+			"es.pinterest.com",
+			"vimeo.com",
+			"plus.google.com",
+			"linkedin.com",
+			"tripadvisor.com"
+		];
+		var domainURL = $xd.extractDomain(externalURL.toLowerCase());
+		return (blacklist.indexOf(domainURL) > -1);
+	};
+
+	/*
+	 * Event Wrapper
+	 */
+	$xd.eventWrapper = function (element, event, funct) {
+		try {
+			element.addEventListener ? element.addEventListener(event, funct) : element.attachEvent && element.attachEvent("on" + event, funct);
+		} catch (e) {
+			$xd.log("AffMLC exception:" + e.message, false);
+		}
+	};
+
+	/*
+	 * Log
+	 */
+	$xd.log = function (note, stop) {
+		if (typeof window.affilireddebug !== 'undefined') {
+			console.log("AffMLC debug: " + note);
+			if (stop) {
+				debugger;
+			}
+		}
+	};
+
+	/*
+	 * Event Listener for the clicks
+	 */
+	$xd.onClick = function (event) {
+		//Looking for the clicked Anchor
+		var tarEl = event.target;
+		while (tarEl.nodeName.toUpperCase() != 'A' && tarEl.parentElement) {
+			tarEl = tarEl.parentElement;
+		}
+
+		if (tarEl && tarEl.nodeName.toUpperCase() == "A") {
+			if ($xd.isLink(tarEl.href)) { //Checking if it is a real link (avoiding javascript:, mailto:, tel:, etc)
+				if ($xd.isExternalLink(tarEl.href)) { //Is it an external link?
+					if (!$xd.inBlackList(tarEl.href)) { //Checking if the external domain in black list
+						//Injecting the propagate parameters into the external link
+						var current_link = $xd.injectParametersToLink(tarEl.href, window._AffMLC_propagate_param);
+						tarEl.href = current_link;
+						$xd.log("Click :: Added parameter to link " + tarEl.href, false);
+					}
+				}
+			}
+		}
+	};
+
+	/*
+	 * Event Listener for FORMSs submits (GET & POST)
+	 */
+	$xd.onSubmit = function (event) {
+		if (typeof event.target.action !== 'undefined') {
+			if (event.target.action != "") {
+				if ($xd.isLink(event.target.action)) { //Checking if it is a real link (avoiding javascript:, mailto:, tel:, etc)
+					if ($xd.isExternalLink(event.target.action)) { // Is it an external link?
+						if (!$xd.inBlackList(event.target.action)) { // Checking if the external domain in black list
+							//Injecting the propagate parameters into the external link
+							var current_link = $xd.injectParametersToLink(event.target.action, window._AffMLC_propagate_param);
+							if (event.target.method.toUpperCase() == 'GET') {
+								//GET action
+								var input = document.createElement("input");
+								input.setAttribute("type", "hidden");
+								input.setAttribute("name", "_affclk");
+								input.setAttribute("value", window._AffMLC_propagate_param.replace("_affclk=", ""));
+								event.srcElement.appendChild(input);
+								$xd.log("Submit :: GET :: Added hidden input", true);
+							} else {
+								//POST action
+								event.target.action = current_link;
+								$xd.log("Submit :: POST :: Added propagation to url " + event.target.action, false);
+
+								/*
+								 * For those JS Apps that are preventing the submit with event.preventDefault();
+								 * we force the Submit now, as we are in the Top of the Event Buble chain.
+								 */
+								if (event.defaultPrevented == true) {
+									$xd.log("Submit :: POST :: Forcing Submit", false);
+									event.target.submit();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	};
+
+	$xd.init = function (merchantId) {
+		//To ensure the function is only fired once
+		if (typeof this.executed === 'undefined') {
+			this.executed = true;
+		} else {
+			return;
+		}
+
+		/*
+		 * We need that each Merchant Local Cookie has its own name, because of some merchants
+		 * can end the booking process in a shared booking engine.
+		 * Ex: merchant1.com has the booking process at bookingeengine.com
+		 * and merchant2.com has the booking process at bookingeengine.com too,
+		 * so we need 2 Merchant Local Cookies at bookingeengine.com to have different values
+		 */
+		$xd.AffLocalCookieName =  "_afflrdmlc" + merchantId;
+
+		var network = null;
+		var affiliate = null;
+		var remainingTime = null;
+		var tracking_reference = null;
+		var clickid = null;
+
+		var acd_sale = ''; // no cdt from the begining
+
+		var cookieHistory = '';
+		var cookieExpiresDate = new Date();
+		var clickTime = Math.round(cookieExpiresDate / 1000);
+
+		window._AffMLC_propagate_param = ''; //Default Propagate param
+
+		/*
+		 * Getting the _affclk parameter from the Location URL or from the Referrer URL
+		 */
+		var affClkReg = new RegExp("[?&]_affclk=([^&#]*)", "i");
+		var affClkString = affClkReg.exec(window.location.href);
+		if (!affClkString) {
+			affClkString = affClkReg.exec(document.referrer);
+		}
+		var affClkValue = affClkString ? affClkString[1] : undefined;
+
+		//Getting the Merchant Local Cookie (used later in any case)
+		var afflrdmlc = $xd.getAffLocalCookie();
+
+		var acd_cookie = '';
+		var device = $xd.getPlatformType();
+
+		if (affClkValue != "" && affClkValue != undefined) {
+			//Fixing any encoded character
+			affClkValue = decodeURIComponent(affClkValue);
+
+			/*
+			 * Splitting the content from the QueryString parameter
+			 */
+			var affClkValueData = affClkValue.split(":");
+			if (affClkValueData[0] !== undefined) {
+				network = affClkValueData[0];
+			}
+			if (affClkValueData[1] !== undefined) {
+				affiliate = affClkValueData[1];
+			}
+			if (affClkValueData[2] !== undefined) {
+				remainingTime = affClkValueData[2];
+				if (remainingTime=='') {
+					remainingTime = null; //COOKIELIFE;
+					cookieExpiresDate.setTime(cookieExpiresDate.getTime() + ($xd.COOKIELIFE * 1000));
+				} else {
+					cookieExpiresDate.setTime(cookieExpiresDate.getTime() + (remainingTime * 1000));
+				}
+			} else {
+				cookieExpiresDate.setTime(cookieExpiresDate.getTime() + ($xd.COOKIELIFE * 1000));
+			}
+			if (affClkValueData[3] !== undefined) {
+				tracking_reference = affClkValueData[3];
+			}
+			if (affClkValueData[4] !== undefined) {
+				clickid = affClkValueData[4];
+			}
+
+			/*
+			 * If we have the _affclk parameter we must:
+			 *  1.- Get the Local cookie
+			 *  2.- Create if it doesn't exist *
+			 *  3.- Update the content if already exists (update history + refresh network and affiliate) * ^
+			 *
+			 *  [*] If we have a remainingTime value, the cookie will have limited time, not a fill time life
+			 */
+
+			// If the Merchant Local Cookie exists
+			if (afflrdmlc !== null) {
+				/*
+				 * The Merchant Local Cookie ALREADY EXISTS
+				 *
+				 * Processing the Cookie Funnel / History = network:affiliate:cookietime[;oldHistory] ([0]:[2]:[5][;[3]])
+				 */
+				var afflrdmlcData = afflrdmlc.split("|");
+				//If remainingTime is null means that we are getting a new click
+				/*
+				* NORMALIZED COOKIE FORMAT:
+				* network | tracking_ref | affiliate_ref | affiliate_ref_old | referrer | cookieTime | acd_sale | clickId | device
+				*
+				*/
+				/*
+				* PROPOSAL OF NORMALIZED FUNNEL FORMAT:
+				* network : affiliate_ref : interactionTime : affiliate_type : device
+				*
+				*/
+                if (typeof afflrdmlcData[8] == 'undefined') {
+                    afflrdmlcData[8] = 0;
+                }
+				if (remainingTime == null) {
+					cookieHistory = afflrdmlcData[0] + ':' + afflrdmlcData[2] + ':' + afflrdmlcData[5] + '::' + afflrdmlcData[8];
+					if (afflrdmlcData[3] != '') {
+						cookieHistory += (encodeURIComponent(';') + afflrdmlcData[3]);
+					}
+					cookieHistory = cookieHistory.substring(0, 2000); // Limiting the size of the history
+					remainingTime = $xd.COOKIELIFE; // Setting the remaining time to be propagated
+				} else if (remainingTime != null) {
+					clickTime = afflrdmlcData[5];
+					cookieHistory = afflrdmlcData[3]; //Same history
+
+					//Checking if the network and affiliate have changed too
+					if (network != afflrdmlcData[0] || affiliate != afflrdmlcData[2]) {
+						cookieHistory = afflrdmlcData[0] + ':' + afflrdmlcData[2] + ':' + afflrdmlcData[5] + '::' + afflrdmlcData[8];
+						if (afflrdmlcData[3] != '') {
+							cookieHistory += (encodeURIComponent(';') + afflrdmlcData[3]);
+						}
+					}
+				}
+			}
+
+			/*
+			* NORMALIZED COOKIE FORMAT:
+			* network | tracking_ref | affiliate_ref | affiliate_ref_old | referrer | cookieTime | acd_sale | clickId | device
+			*
+			*/
+
+			/* Create / Update the Merchant Local Cookie [setAffLocalCookie(network, tracking_ref = '', affiliate, funnel = '', referrer = '', cookieTime, expires, domain)] */
+			$xd.setAffLocalCookie(network, tracking_reference, affiliate, cookieHistory, '', clickTime, acd_sale, clickid, device, cookieExpiresDate.toUTCString(), $xd.getDomain());
+
+			// Setting global variable to propagate parameters
+			window._AffMLC_propagate_param = $xd.createPropagateParam(network, affiliate, remainingTime, tracking_reference, clickid);
+		} else {
+			/*
+			 * In case we don't have the "_affclk" parameter in the URL and referrer,
+			 * we check if the local cookie "_afflrdmlc" cookie exists. If it exists we get the data from the local cookie
+			 * to injectParameters() in the external links
+			 */
+			if (afflrdmlc !== null) {
+				// Getting data from the cookie
+				var data = afflrdmlc.split('|');
+
+				/*
+				* NORMALIZED COOKIE FORMAT:
+				* network | tracking_ref | affiliate_ref | affiliate_ref_old | referrer | cookieTime | acd_sale | clickId | device
+				*
+				*/
+
+				// Network
+				network = data[0];
+
+				// Tracking Reference
+				tracking_reference = data[1];
+
+				// Affiliate Ref
+				affiliate = data[2];
+
+				// funnel
+				cookieHistory = data[3];
+
+				// referer
+				referer = data[4];
+
+				// Remaining time
+				var cookieCreatedTime = data[5];
+				var cookieExpiryTime = parseInt(cookieCreatedTime) + parseInt($xd.COOKIELIFE);
+				var d = new Date();
+				var nowms = Math.round(d / 1000);
+				remainingTime = parseInt(cookieExpiryTime) - parseInt(nowms);
+
+				// acd_sale
+				acd_sale = data[6];
+
+				// ClickId
+				if (data[7] !== undefined) {
+					clickid = data[7];
+				}
+
+				// we keep the device as the detected device before this if / else branch, no mathers what the cookie says
+
+				// Setting global variable to propagate parameters
+				window._AffMLC_propagate_param = $xd.createPropagateParam(network, affiliate, remainingTime, tracking_reference, clickid);
+			}
+		}
+		/*
+		 * Attaching to events
+		 */
+		$xd.eventWrapper(window, "click", $xd.onClick);
+		$xd.eventWrapper(window, "submit", $xd.onSubmit);
+	};
+})(AffMLC);
+
+(function () {
+	try {
+		if (typeof AffMLC !== 'undefined') {
+			if (document.readyState === "loading") {
+				document.onreadystatechange = function () {
+					if (document.readyState === "interactive") {
+						AffMLC.init(4674);
+					}
+				};
+			} else {
+				AffMLC.init(4674);
+			}
+		}
+	} catch (e) {
+		console.log("AffMLC main exception :: " + e.message);
+	}
+})();
+
+} 
+

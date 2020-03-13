@@ -1,0 +1,128 @@
+/*Titanic Hotels*/
+var DNdbmID = '9358524';
+var DNsegment = 'visitor';
+var DNcounter = 'counter';
+var DNidp = 0;
+var DNStep = 0;
+var DNboolean = true;
+
+if (window.location.href.indexOf('utm_source=hotelfinder') != -1) {
+    DNsegment = 'visitor_hotelfinder';
+}
+
+if (typeof DNdbmID != 'undefined' && DNdbmID != null) {
+    var DNhotels = [];
+
+    DNhotels[DNidp++] = {id: 'mardanpalace', idbe: '108567', segment: 'mardanpalace'};
+    DNhotels[DNidp++] = {id: 'titanicdeluxegolfbelek', idbe: '77707', segment: 'deluxegolfbelek'};
+    DNhotels[DNidp++] = {id: 'titanicbeachlara', idbe: '75379', segment: 'beachlara'};
+    DNhotels[DNidp++] = {id: 'titanicdeluxebodrum', idbe: '99215', segment: 'deluxebodrum'};
+    DNhotels[DNidp++] = {id: 'trtitanicbusinessgoldenhorn', idbe: '76729', segment: 'businessgoldenhorn'};
+    DNhotels[DNidp++] = {id: 'titanicbusinesskartal', idbe: '75372', segment: 'businesskartal'};
+    DNhotels[DNidp++] = {id: 'titanicportbakirkoy', idbe: '75375', segment: 'portbakirkoy'};
+    DNhotels[DNidp++] = {id: 'titaniccitytaksim', idbe: '75373', segment: 'citytaksim'};
+    DNhotels[DNidp++] = {id: 'titaniccomfortsisli', idbe: '75377', segment: 'comfortsisli'};
+    DNhotels[DNidp++] = {id: 'titanicanadolugebze', idbe: '777777', segment: 'anadolugebze'};
+    DNhotels[DNidp++] = {id: 'titanicdowntownbeyoglu', idbe: '106954', segment: 'downtownbeyoglu'};
+    DNhotels[DNidp++] = {id: 'titaniccomfortmitte', idbe: '75381', segment: 'comfortmitte'};
+    DNhotels[DNidp++] = {id: 'titanicgendarmenmarktberlin', idbe: '97085', segment: 'gendarmenmarktberlin'};
+    DNhotels[DNidp++] = {id: 'titanicchausseeberlin', idbe: '98147', segment: 'chausseeberlin'};
+
+    checkDNSegment();
+}
+
+if (window.location.href.indexOf('reservations') != -1) {
+    var DNnodeObserver = document.getElementsByClassName('Site')[0];
+    var DNMutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+    var DNobserver = new DNMutationObserver(function (event) {
+        if (DNboolean && window.location.href.toLowerCase().indexOf('total') != -1) {
+            DNboolean = false;
+            checkDNSegment();
+            fireHotMicroPixel();
+            DNobserver.disconnect();
+        }
+    });
+
+    DNobserver.observe(DNnodeObserver, {
+        attributes: true,
+        childList: true,
+        characterData: false
+    });
+}
+
+function checkDNSegment() {
+    for (var i = 0; i < DNhotels.length; i++) {
+        if (typeof DNdbmID != 'undefined' && DNdbmID != null) {
+            if (window.location.href.indexOf('reservations') != -1 || window.location.href.indexOf('ourhotels') != -1) {
+                DNStep = 1;
+                if (window.location.href.indexOf('utm_source=hotelfinder') == -1) {
+                    if (window.location.href.indexOf(DNhotels[i].idbe) != -1) {
+                        DNsegment = 'intention_' + DNhotels[i].segment;
+                        break;
+                    } else {
+                        DNsegment = 'intention';
+                    }
+                } else {
+                    DNsegment = 'intention_hotelfinder';
+                }
+            }
+        }
+
+        if (window.location.href.indexOf(DNhotels[i].id) != -1) {
+            DNsegment = 'hotel_' + DNhotels[i].segment;
+            break;
+        }
+    }
+
+    DNStep = window.location.href.toLowerCase().indexOf('total') != -1 ? 2 : DNStep;
+
+    if (typeof DNdebug != 'undefined' && DNdebug != null) {
+        console.log(DNsegment);
+    } else {
+        !(function () {
+            if (typeof DNdbmID != 'undefined' && DNdbmID != null) {
+                var DNActivityType;
+                var DNUnique;
+                switch (DNStep) {
+                    case 0:
+                        DNActivityType = 'visit0';
+                        DNUnique = '';
+                        break;
+                    default:
+                        DNActivityType = 'micro0';
+                        DNUnique = ';num=';
+                        break;
+                }
+                var axel = Math.random() + "";
+                var a = axel * 10000000000000;
+                var newIFrame = document.createElement('iframe');
+                newIFrame.src = 'https://' + DNdbmID + '.fls.doubleclick.net/activityi;src=' + DNdbmID + ';type=' + DNActivityType + ';cat=' + DNActivityType + ';u1=' + DNsegment + ';u27=' + DNcounter + ';u28=' + DNStep + ';dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;ord=1' + DNUnique + a + '?';
+                newIFrame.width = "0";
+                newIFrame.frameBorder = "0";
+                newIFrame.height = "0";
+                newIFrame.style = "visibility: hidden; display: none; border: medium none;";
+                var scriptNode = document.getElementsByTagName("body")[0];
+                if (scriptNode) scriptNode.appendChild(newIFrame, scriptNode);
+            }
+        })();
+    }
+}
+
+function fireHotMicroPixel() {
+    if (DNStep == 2) {
+        var DNActivityType;
+        var DNUnique;
+        DNActivityType = 'hot_m0';
+        DNUnique = ';num=';
+        var axel = Math.random() + "";
+        var a = axel * 10000000000000;
+        var newIFrame = document.createElement('iframe');
+        newIFrame.src = 'https://' + DNdbmID + '.fls.doubleclick.net/activityi;src=' + DNdbmID + ';type=' + DNActivityType + ';cat=' + DNActivityType + ';dc_lat=;dc_rdid=;tag_for_child_directed_treatment=;ord=1' + DNUnique + a + '?';
+        newIFrame.width = "0";
+        newIFrame.frameBorder = "0";
+        newIFrame.height = "0";
+        newIFrame.style = "visibility: hidden; display: none; border: medium none;";
+        var scriptNode = document.getElementsByTagName("body")[0];
+        if (scriptNode) scriptNode.appendChild(newIFrame, scriptNode);
+    }
+}

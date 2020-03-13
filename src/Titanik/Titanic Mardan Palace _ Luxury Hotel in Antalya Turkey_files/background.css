@@ -1,0 +1,4 @@
+.experience:nth-child(3):after,
+.experience:nth-child(4n+3):after { background-image: url(../images/temp/welcome-right.png); }
+.caption .prev { background-image: url(../images/svgs/arrow-left.svg) }
+.caption .next { background-image: url(../images/svgs/arrow-right.svg); }
